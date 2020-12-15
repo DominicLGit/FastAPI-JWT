@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+    <div>
+        <script>
+            $(document).ready(function(){
+                $("#submitsignon").click(function(){
+                    $.post("/token",
+                        {
+                            username: "johndoe",
+                            password: "secret"
+                        },
+                        function(data, status){
+                        alert("Data: " + data + "\nStatus: " + status);
+                        sessionStorage.setItem('JWTToken', JSON.stringify(data.access_token));
+                    });
+                });
+                $("#testauth").click(function(){
+                    let token = JSON.parse(sessionStorage.getItem('JWTToken'));
+                    var request = $.get(`/users/me?token=${token}`,
+                        function(data, status){
+                        alert(JSON.stringify(data.username + "\nStatus: " + status))
+                    });
+
+                    request.error(function (httpObj, textStatus) {
+                        alert(textStatus)
+                    })
+                });
+            });
+
+            function testAuth(){
+                let token = JSON.parse(sessionStorage.getItem('JWTToken'));
+                let url = `/users/me/?token=${token}`;
+                let h = new Headers();
+                let req = new Request(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                });
+                fetch(req)
+                .then(resp => resp.json())
+                .then(data => {
+                    console.log(data[0]);
+                })
+                .catch(err => {
+                    console.error(err.message)
+                });
+            }
+        </script>
+        <form id="signonform">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username"><br><br>
+            <label for="password">Last name:</label>
+            <input type="password" id="password" name="password"><br><br>
+            <button type="submit" id="submitsignon">SUBMIT</button>
+        </form>
+
+        <button id="testauth">testAuth</button>
+    </div>
+</body>
+</html>
