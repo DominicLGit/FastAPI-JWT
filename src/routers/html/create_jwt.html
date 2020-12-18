@@ -4,26 +4,13 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
 </head>
 <body>
     <div>
         <script>
-            $(document).ready(function(){
-                $("#submitsignon").click(function(){
-                    $.post("/token",
-                        {
-                            username: "johndoe",
-                            password: "secret"
-                        },
-                        function(data, status){
-                        sessionStorage.setItem('JWTToken', JSON.stringify(data.access_token));
-                    });
-                });
-            });
-
             function testAuth(){
-                let token = JSON.parse(sessionStorage.getItem('JWTToken'));
-                let url = `/users/me/?token=${token}`;
+                let url = `/users/me/`;
                 let h = new Headers();
                 let req = new Request(url, {
                     method: 'GET',
@@ -38,16 +25,37 @@
                     console.error(err.message)
                 });
             }
+            function testRemoteAuth(){
+                let token = Cookies.get('Authorization')
+                let h = new Headers();
+                let url = "http://server2.localtest.me:8001/users/me/"
+                h.append("Authorization", token)
+                let req = new Request(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers: h,
+                });
+                fetch(req)
+                .then(resp => resp.json())
+                .then(data => {
+                    console.log(data[0]);
+                })
+                .catch(err => {
+                    console.error(err.message)
+                });
+            }
         </script>
-        <form id="signonform">
+        <h1>Server 1</h1>
+        <form action="/token" method="post">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username"><br><br>
             <label for="password">Last name:</label>
             <input type="password" id="password" name="password"><br><br>
-            <button type="submit" id="submitsignon">SUBMIT</button>
+            <button type="submit">SUBMIT</button>
         </form>
-
         <button onclick="testAuth()">testAuth</button>
+        <button onclick="testRemoteAuth()">TestRemoteAuth</button>
     </div>
 </body>
 </html>
