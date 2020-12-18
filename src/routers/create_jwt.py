@@ -5,13 +5,13 @@ from fastapi.security.utils import get_authorization_scheme_param
 from fastapi.templating import Jinja2Templates
 import uvicorn
 from passlib.context import CryptContext
-from fastapi import Depends, FastAPI, HTTPException, status, Request, Form
+from fastapi import Depends, FastAPI, HTTPException, status, Request
 from pydantic import BaseModel
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, OAuth2, HTTPBasicCredentials
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse, Response
+from starlette.responses import Response
 from starlette.status import HTTP_403_FORBIDDEN
 
 origins = [
